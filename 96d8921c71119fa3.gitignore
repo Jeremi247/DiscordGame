@@ -1,0 +1,6 @@
+/node_modules
+config.js
+*.ftpconfig
+*.ftpignore
+.eslintrc.js
+*.db
