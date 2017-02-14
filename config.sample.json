@@ -1,4 +1,8 @@
 {
-	"token":"TOKEN",
-	"prefix":"GC: "
+	"token": "TOKEN",
+	"prefix": "GC: ",
+	"owners": {
+		"103210786695974912": "Runug",
+		"103210872939249664": "Tiuna"
+	}
 }

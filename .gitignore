@@ -2,5 +2,4 @@
 config.json
 *.ftpconfig
 *.ftpignore
-.eslintrc.js
 *.db
