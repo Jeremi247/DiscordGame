@@ -1,5 +1,6 @@
 const icons = require('./icons.json');
 const config = require('./config.json');
+const embeds = require('./embeds.js');
 let isSessionInProgress = false;
 let numberOfPlayers;
 
