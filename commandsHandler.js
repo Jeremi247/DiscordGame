@@ -1,14 +1,15 @@
 const icons = require('./icons.json');
 const config = require('./config.json');
 const embeds = require('./embeds.js');
-let isSessionInProgress = false;
+const session = require('./sessionHandler');
+
 let numberOfPlayers;
 
 exports.requestCommand = (msg, cmd, args) => {
 	cmd = cmd.toLowerCase();
 
 	switch(cmd){
-		case 'start': start(msg, args); break;
+		case 'start': session.begin(msg, args); break;
 		case 'repeat': repeat(msg, args); break;
 		case 'eval': ev(msg, args); break;
 		case 'harvest': eggplant(msg, args); break;
@@ -25,38 +26,16 @@ function eggplant(msg){
 	msg.channel.sendMessage(icons.eggplant);
 }
 
-function start(msg, args){
-	if(isSessionInProgress){
-		msg.channel.sendMessage('Sorry can\'t do. Session in progress.');
-	}
-	else if(args[0] === 'new' && !args[1].isNaN()){
-		prepareSession(msg, args[1]);
-	}
-	else{
-		msg.channel.sendMessage(
-			'Niepoprawna komenda.\n'+
-			'Komenda to: `GC: start new {ilość graczy}`'
-		);
-	}
-}
-
-function prepareSession(msg, playersNum){
-	msg.channel.sendMessage('Przygotowywanie sesji...').then(m => {
-
-		startSession(m, msg, playersNum);
-	});
-}
-
-function startSession(m, msg, args){
-	m.edit('Sesja rozpoczęta!');
-}
 function ev(msg, args){
-	if(!config.owners.hasOwnProperty(msg.author.id))
-		return msg.channel.sendMessage(`${msg.author}, You aren't an owner!`);
-	if(!args[0])
-		return msg.channel.sendMessage(`${msg.author}, evel is empty!`);
 	let output;
 	let toEval = args.join(' ');
+
+	if(!config.owners.hasOwnProperty(msg.author.id))
+		return msg.channel.sendMessage(`${msg.author}, You aren't an owner!`);
+
+	if(!args[0])
+		return msg.channel.sendMessage(`${msg.author}, evel is empty!`);
+
 	try {
 		output = String(eval(toEval));
 	}
@@ -78,4 +57,5 @@ function ev(msg, args){
 		msg.channel.sendEmbed(embed);
 	}
 }
+
 module.exports = exports;

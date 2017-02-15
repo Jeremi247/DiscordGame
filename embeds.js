@@ -1,11 +1,15 @@
 const icons = require('./icons.json');
+
 exports.status = (msg, stats) => {
 	let hp = '';
+	let mp = '';
+
 	for(let i = 0; stats.hp > i;i++)
 		hp += icons.heart;
-	let mp = '';
+
 	for(let i = 0; stats.mp > i;i++)
 		mp += icons.mana;
+
 	return {
 		author: {
 			name: `${msg.member.displayName} Lv. ${stats.level} [${stats.exp}/${stats.expreq}]`,
