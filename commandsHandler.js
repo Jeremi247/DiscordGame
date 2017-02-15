@@ -10,6 +10,7 @@ exports.requestCommand = (msg, cmd, args) => {
 
 	switch(cmd){
 		case 'start': session.begin(msg, args); break;
+		case 'join': session.join(msg, args); break;
 		case 'repeat': repeat(msg, args); break;
 		case 'eval': ev(msg, args); break;
 		case 'harvest': eggplant(msg, args); break;
