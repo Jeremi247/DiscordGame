@@ -1,21 +1,22 @@
 const icons = require('./icons.json');
 const config = require('./config.json');
-const embeds = require('./embeds.js');
+//const embeds = require('./embeds.js');
 const session = require('./sessionHandler');
-
-let numberOfPlayers;
 
 exports.requestCommand = (msg, cmd, args) => {
 	cmd = cmd.toLowerCase();
 
 	switch(cmd){
 		case 'start': session.begin(msg, args); break;
-		case 'join': session.join(msg, args); break;
+		case 'join': session.join(msg); break;
+		case 'leave': session.leave(msg); break;
+		case 'leave': session.leave(msg, args); break;
 		case 'repeat': repeat(msg, args); break;
 		case 'eval': ev(msg, args); break;
 		case 'harvest': eggplant(msg, args); break;
-		//default: msg.channel.sendMessage('Command unknown');
-		//Nie powinno sie zwracac bledu :P
+		default: console.log(
+			'Someone send an unknown command: "'
+			+ msg + ' ' + args.join(' ') + '"');
 	}
 };
 
@@ -32,10 +33,10 @@ function ev(msg, args){
 	let toEval = args.join(' ');
 
 	if(!config.owners.hasOwnProperty(msg.author.id))
-		return msg.channel.sendMessage(`${msg.author}, You aren't an owner!`);
+		return msg.channel.sendMessage(`${msg.author}, You are not the owner!`);
 
 	if(!args[0])
-		return msg.channel.sendMessage(`${msg.author}, evel is empty!`);
+		return msg.channel.sendMessage(`${msg.author}, eval is empty!`);
 
 	try {
 		output = String(eval(toEval));

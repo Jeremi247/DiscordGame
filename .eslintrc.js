@@ -10,13 +10,6 @@ module.exports = {
     "rules": {
         "no-console": "off",
         "no-var": "error",
-        "max-len": [
-            "error", 80
-        ],
-        "linebreak-style": [
-            "error",
-            "unix"
-        ],
         "quotes": [
             "error",
             "single"
