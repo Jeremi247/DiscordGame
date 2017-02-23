@@ -1,104 +1,135 @@
-let game = Session();
+let game = {};
 
-exports.begin = (msg, args) => {
-	if(game.isBeingPrepared){
-		msg.channel.sendMessage('Sorry can\'t do. Session in progress.');
+exports.startNew = (msg, args) => {
+	var sessionName = args.slice();
+	sessionName.shift();
+	sessionName = sessionName.join(' ');
+
+	console.log(sessionName);
+	console.log(args);
+
+	if(!game[msg.guild.id]) game[msg.guild.id] = {};
+
+	if(!args[0]){
+		return msg.channel.sendMessage('Number of players is required');
 	}
-	else if(args[0] === 'new' && !args[1].isNaN){
-		startPreparingGame(msg, args[1]);
+
+	if(game[msg.guild.id][sessionName]){
+		msg.channel.sendMessage('Sorry can\'t do. This name is taken.');
+	}
+	else if(!args[0].isNaN && sessionName){
+		startPreparingGame(msg, args, sessionName);
 	}
 	else{
 		msg.channel.sendMessage(
 			'Niepoprawna komenda.\n'+
-			'Komenda to: `GC: start new {ilość graczy}`'
+			'Komenda to: `GC: start [ilość graczy] [nazwa sesji] {hasło}`'
 		);
 	}
 };
 
-function startPreparingGame(msg, maxPlayers){
-	msg.channel.sendMessage('Przygotowywanie sesji...');
-	game.maxPlayers = maxPlayers;
-	game.isBeingPrepared = true;
-	exports.join(msg, true);
+function startPreparingGame(msg, args, sessionName){
+	game[msg.guild.id][sessionName] = Session();
+	let session = game[msg.guild.id][sessionName];
+
+	msg.channel.sendMessage('Przygotowywanie sesji ' + sessionName);
+
+	session.maxPlayers = args[0];
+
+	if(args[2]){
+		session.password = args[2];
+	}
+	args[0] = sessionName;
+
+	args.shift();
+	exports.join(msg, args, true);
 }
 
 function startSession(msg){
 	msg.channel.sendMessage('Sesja rozpoczęta!');
 }
 
-exports.leave = (msg) => {
+exports.leave = (msg, args) => {
+	var sessionName = args.join(' ');
+	let session;
+
+	if(args) session = game[msg.guild.id][sessionName];
+
 	if(!canLeave(msg)){
 		return;
 	}
 
-	game.playersJoined--;
+	session.playersJoined--;
 	msg.channel.sendMessage('Player ' + msg.author + ' left the session.');
 
-	if(game.playersJoined == 0){
+	if(session.playersJoined == 0){
 		msg.channel.sendMessage('The game has been disbanded');
-		game.isBeingPrepared = false;
-		game.players = {};
+		delete game[msg.guild.id][sessionName];
 		return;
 	}
 
-	msg.channel.sendMessage((game.maxPlayers - game.playersJoined) + ' more players required.');
+	msg.channel.sendMessage((session.maxPlayers - session.playersJoined) + ' more players required.');
 
-	if(game.players[msg.author.id].master){
-		game.players[Object.keys(game.players)[1]].master = true;
-		msg.channel.sendMessage(`<@!${Object.keys(game.players)[1]}> is the new master`);
-		delete game.players[msg.author.id];
-		console.log(game.players[msg.author.id]);
+	game[msg.guild.id][sessionName] = session;
+
+	if(session.players[msg.author.id].master){
+		session.players[Object.keys(session.players)[1]].master = true;
+		msg.channel.sendMessage(`<@!${Object.keys(session.players)[1]}> is the new master`);
+		delete session.players[msg.author.id];
 	}
 	else{
-		delete game.players[msg.author.id];
+		delete session.players[msg.author.id];
 	}
 
 	function canLeave(msg){
-		if(game.isInProgress){
-			msg.channel.sendMessage('You can\' leave session in progress.');
+		if(!session){
+			msg.channel.sendMessage('There is no session with this name');
 			return false;
 		}
-		if(!game.players.hasOwnProperty(msg.author.id)){
+		if(!session.players.hasOwnProperty(msg.author.id)){
 			msg.channel.sendMessage('You are not in this session');
-			return false;
-		}
-		if(!game.isBeingPrepared){
-			msg.channel.sendMessage('There is no session that you can leave');
 			return false;
 		}
 		return true;
 	}
 };
 
-exports.join = (msg, master) => {
+exports.join = (msg, args, master) => {
+	var sessionName = args.join(' ');
+	let session = {};
+
+	if(args) session = game[msg.guild.id][sessionName];
+
 	if(!canJoin(msg)){
 		return;
 	}
 
-	game.players[msg.author.id] = {master: master || false};
-	game.playersJoined++;
+	session.players[msg.author.id] = {master: master || false};
+	session.playersJoined++;
 	msg.channel.sendMessage('Player ' + msg.author + ' connected.');
 
-	if(game.playersJoined >= game.maxPlayers){
+	if(session.playersJoined >= session.maxPlayers){
 		msg.channel.sendMessage('Session started');
 		startSession(msg);
 	}
 	else
 	{
-		msg.channel.sendMessage((game.maxPlayers - game.playersJoined) + ' more players required.');
+		msg.channel.sendMessage((session.maxPlayers - session.playersJoined) + ' more players required.');
 	}
 
+	game[msg.guild.id][sessionName] = session;
+
 	function canJoin(msg){
-		if(!game.isBeingPrepared){
-			msg.channel.sendMessage('Żadna sesja nie jest teraz tworzona');
+		if(!session){
+			msg.channel.sendMessage('There is no session with this name');
 			return false;
 		}
-		if(game.players.hasOwnProperty(msg.author.id)){
-			msg.channel.sendMessage('Jesteś już w sesji');
+		if(session.players.hasOwnProperty(msg.author.id)){
+			msg.channel.sendMessage('You already are in this session');
 			return false;
 		}
-		if(game.playersJoined >= game.maxPlayers){
-			msg.channel.sendMessage('Sesja jest pełna');
+		if(session.playersJoined >= session.maxPlayers){
+			msg.channel.sendMessage('Session is full');
 			return false;
 		}
 		return true;
@@ -107,7 +138,6 @@ exports.join = (msg, master) => {
 
 function Session(){
 	let ob = {};
-	ob.isBeingPrepared = false;
 	ob.isInProgress = false;
 	ob.playersJoined = 0;
 	ob.maxPlayers = 0;
@@ -115,5 +145,4 @@ function Session(){
 
 	return ob;
 }
-
 module.exports = exports;
