@@ -7,7 +7,7 @@ exports.requestCommand = (msg, cmd, args) => {
 	cmd = cmd.toLowerCase();
 
 	switch(cmd){
-		case 'start': session.startNew(msg, args); break;
+		case 'create': session.startNew(msg, args); break;
 		case 'join': session.join(msg, args); break;
 		case 'leave': session.leave(msg, args); break;
 		case 'repeat': repeat(msg, args); break;
