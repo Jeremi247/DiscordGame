@@ -3,7 +3,9 @@ let game = {};
 exports.startNew = (msg, args) => {
 	let sessionName = args.join(' ');
 
-	if(!game[msg.guild.id]) game[msg.guild.id] = {};
+	if(!game[msg.guild.id]){
+		game[msg.guild.id] = {};
+	}
 
 	if(game[msg.guild.id][sessionName]){
 		msg.channel.sendMessage('Sorry can\'t do. This name is taken.');
@@ -36,7 +38,9 @@ exports.leave = (msg, args) => {
 	let sessionName = args.join(' ');
 	let session;
 
-	if(args) session = game[msg.guild.id][sessionName];
+	if(args){
+		session = game[msg.guild.id][sessionName];
+	}
 
 	if(!canLeave(msg)){
 		return;
