@@ -1,5 +1,5 @@
-const config = require('./config.json');
-const cmd = require('./commandsHandler.js');
+const config = require('./json/config.json');
+const cmd = require('./modules/commandsHandler.js');
 
 const discordJS = require('discord.js');
 const bot = new discordJS.Client();

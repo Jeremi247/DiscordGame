@@ -1,6 +1,6 @@
-const icons = require('./icons.json');
-const config = require('./config.json');
-//const embeds = require('./embeds.js');
+const icons = require('../json/icons.json');
+const config = require('../json/config.json');
+//const embeds = require('../misc/embeds.js');
 const session = require('./sessionHandler');
 
 exports.requestCommand = (msg, cmd, args) => {
@@ -11,7 +11,7 @@ exports.requestCommand = (msg, cmd, args) => {
 		case 'join': session.join(msg, args); break;
 		case 'leave': session.leave(msg, args); break;
 		case 'repeat': repeat(msg, args); break;
-		case 'debug:eval': debugEval(msg, args); break;
+		case 'eval': debugEval(msg, args); break;
 		case 'harvest': eggplant(msg, args); break;
 		default: console.log(
 			'Someone send an unknown command: "'

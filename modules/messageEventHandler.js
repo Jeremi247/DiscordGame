@@ -1,4 +1,4 @@
-const config = require('./config.json');
+const config = require('../json/config.json');
 const cmd = require('./commandsHandler.js');
 let localBot;
 
