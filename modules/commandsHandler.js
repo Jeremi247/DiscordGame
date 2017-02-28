@@ -5,14 +5,16 @@ const session = require('./sessionHandler');
 
 exports.requestCommand = (msg, cmd, args) => {
 	cmd = cmd.toLowerCase();
+	session.init(msg);
 
 	switch(cmd){
-		case 'create': session.startNew(msg, args); break;
+		case 'create': session.createNew(msg, args); break;
+		case 'start' : session.begin(msg, args); break;
 		case 'join': session.join(msg, args); break;
 		case 'leave': session.leave(msg, args); break;
 		case 'repeat': repeat(msg, args); break;
 		case 'eval': debugEval(msg, args); break;
-		case 'harvest': eggplant(msg, args); break;
+		case 'check': session.debugCheck(msg); break;
 		default: console.log(
 			'Someone send an unknown command: "'
 			+ msg + ' ' + args.join(' ') + '"');

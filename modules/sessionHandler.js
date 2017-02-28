@@ -1,11 +1,13 @@
 let game = {};
 
-exports.startNew = (msg, args) => {
-	let sessionName = args.join(' ');
-
+exports.init = (msg) =>{
 	if(!game[msg.guild.id]){
 		game[msg.guild.id] = {};
 	}
+};
+
+exports.createNew = (msg, args) => {
+	let sessionName = args.join(' ');
 
 	if(game[msg.guild.id][sessionName]){
 		msg.channel.sendMessage('Sorry can\'t do. This name is taken.');
@@ -21,18 +23,31 @@ exports.startNew = (msg, args) => {
 	}
 };
 
-function startPreparingGame(msg, args, sessionName){
-	game[msg.guild.id][sessionName] = Session();
-	let session = game[msg.guild.id][sessionName];
+exports.begin = (msg, args) => {
+	let sessionName = args.join(' ');
 
-	msg.channel.sendMessage('Preparing session: ' + sessionName);
+	if(!canBegin(msg, sessionName)){
+		return;
+	};
 
-	exports.join(msg, args, true);
-}
+	msg.channel.sendMessage(msg.author + ' has started the game');
+	game[msg.guild.id][sessionName].isInProgress = true;
 
-function startSession(msg){
-	msg.channel.sendMessage('Session started!');
-}
+	function canBegin(msg, sessionName){
+		if(!sessionName){
+			msg.channel.sendMessage('You need to provide name of the session you want to start');
+			return false;
+		}
+		if(game[msg.guild.id][sessionName].players[msg.author.id].master != true){
+			msg.channel.sendMessage('You are not the session owner');
+		}
+		return true;
+	}
+};
+
+exports.debugCheck = (msg) => {
+	console.log(game[msg.guild.id]);
+};
 
 exports.leave = (msg, args) => {
 	let sessionName = args.join(' ');
@@ -120,6 +135,19 @@ exports.join = (msg, args, master) => {
 		return true;
 	}
 };
+
+function startPreparingGame(msg, args, sessionName){
+	game[msg.guild.id][sessionName] = Session();
+	let session = game[msg.guild.id][sessionName];
+
+	msg.channel.sendMessage('Preparing session: ' + sessionName);
+
+	exports.join(msg, args, true);
+}
+
+function startSession(msg){
+	msg.channel.sendMessage('Session started!');
+}
 
 function Session(){
 	let ob = {};

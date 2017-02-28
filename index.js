@@ -3,7 +3,7 @@ const cmd = require('./modules/commandsHandler.js');
 
 const discordJS = require('discord.js');
 const bot = new discordJS.Client();
-const messageHandler = require('./messageEventHandler.js');
+const messageHandler = require('./modules/messageEventHandler.js');
 
 messageHandler.setBot(bot);
 
