@@ -1,8 +1,10 @@
-let game = {};
+const gameController = require('./gameContainer.js');
+let game = gameController.getGame();
 
 exports.init = (msg) =>{
 	if(!game[msg.guild.id]){
 		game[msg.guild.id] = {};
+		updateGameContainer(game);
 	}
 };
 
@@ -31,7 +33,9 @@ exports.begin = (msg, args) => {
 	};
 
 	msg.channel.sendMessage(msg.author + ' has started the game');
-	game[msg.guild.id][sessionName].isInProgress = true;
+	game[msg.guild.id][sessionName].isInProgress = true;	
+
+	updateGameContainer(game);
 
 	function canBegin(msg, sessionName){
 		if(!sessionName){
@@ -64,18 +68,21 @@ exports.leave = (msg, args) => {
 	session.playersJoined--;
 	msg.channel.sendMessage('Player ' + msg.author + ' left the session.');
 
-	isSessionEmpty(msg);
-	deletePlayer();
+	deletePlayer(msg, session, sessionName);
 
-	game[msg.guild.id][sessionName] = session;
+	updateGameContainer(game);
 
-
-	function deletePlayer(){
-		if(session.players[msg.author.id].master){
+	function deletePlayer(msg, session, sessionName){
+		if(session.playersJoined == 0){
+			msg.channel.sendMessage('The game has been disbanded');
+			delete game[msg.guild.id][sessionName];
+		}
+		else if(session.players[msg.author.id].master){
 			session.players[Object.keys(session.players)[1]].master = true;
 			msg.channel.sendMessage(`<@!${Object.keys(session.players)[1]}> is the new master`);
+			delete session.players[msg.author.id];
+			game[msg.guild.id][sessionName] = session;
 		}
-		delete session.players[msg.author.id];
 	}
 	
 	function isSessionEmpty(msg){
@@ -119,9 +126,11 @@ exports.join = (msg, args, master) => {
 
 	game[msg.guild.id][sessionName] = session;
 
+	updateGameContainer(game);
+
 	function canJoin(msg){
 		if(!sessionName){
-			msg.channel.sendMessage('You need to provide name of the session you want to leave');
+			msg.channel.sendMessage('You need to provide name of the session you want to join');
 			return false;
 		}
 		if(!session){
@@ -156,6 +165,10 @@ function Session(){
 	ob.players = {};
 
 	return ob;
+}
+
+function updateGameContainer(game){
+	gameController.setGame(game);
 }
 
 module.exports = exports;
