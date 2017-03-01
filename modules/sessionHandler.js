@@ -9,6 +9,7 @@ exports.init = (msg) =>{
 };
 
 exports.createNew = (msg, args) => {
+	updateGameObject();
 	let sessionName = args.join(' ');
 
 	if(game[msg.guild.id][sessionName]){
@@ -26,6 +27,7 @@ exports.createNew = (msg, args) => {
 };
 
 exports.begin = (msg, args) => {
+	updateGameObject();
 	let sessionName = args.join(' ');
 
 	if(!canBegin(msg, sessionName)){
@@ -44,16 +46,14 @@ exports.begin = (msg, args) => {
 		}
 		if(game[msg.guild.id][sessionName].players[msg.author.id].master != true){
 			msg.channel.sendMessage('You are not the session owner');
+			return false;
 		}
 		return true;
 	}
 };
 
-exports.debugCheck = (msg) => {
-	console.log(game[msg.guild.id]);
-};
-
 exports.leave = (msg, args) => {
+	updateGameObject();
 	let sessionName = args.join(' ');
 	let session;
 
@@ -111,6 +111,7 @@ exports.leave = (msg, args) => {
 };
 
 exports.join = (msg, args, master) => {
+	updateGameObject();
 	let sessionName = args.join(' ');
 	let session;
 
@@ -169,6 +170,10 @@ function Session(){
 
 function updateGameContainer(game){
 	gameController.setGame(game);
+}
+
+function updateGameObject(){
+	game = gameController.getGame();
 }
 
 module.exports = exports;
