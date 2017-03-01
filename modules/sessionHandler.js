@@ -83,6 +83,10 @@ exports.leave = (msg, args) => {
 			delete session.players[msg.author.id];
 			game[msg.guild.id][sessionName] = session;
 		}
+		else{
+			delete session.players[msg.author.id];
+			game[msg.guild.id][sessionName] = session;
+		}
 	}
 
 	function canLeave(msg){
@@ -137,6 +141,47 @@ exports.join = (msg, args, master) => {
 		return true;
 	}
 };
+
+exports.kick = (msg, args) => {
+	updateGameObject();
+	let userToKick = args.shift();
+	userToKick = translateUserName(userToKick);
+
+	let sessionName = args.join(' ');
+	let session;
+
+	if(args) session = game[msg.guild.id][sessionName];
+
+	if(!canBeKicked(msg, userToKick, sessionName)){
+		return;
+	}
+
+	msg.author.id = userToKick;
+	exports.leave(msg, args);
+
+	function translateUserName(userName){
+		return userName.substring(3,userName.length-1);
+	}
+	function canBeKicked(msg, userToKick, sessionName){
+		if(!sessionName){
+			msg.channel.sendMessage('You need to provide name of the session `GC: kick [player] [name]`');
+			return false;
+		}
+		if(!session){
+			msg.channel.sendMessage('There is no session with this name');
+			return false;
+		}
+		if(game[msg.guild.id][sessionName].players[msg.author.id].master == false){
+			msg.channel.sendMessage('You are not game master');
+			return false;
+		}
+		if(!game[msg.guild.id][sessionName].players.hasOwnProperty(userToKick)){
+			msg.channel.sendMessage('This user is not in this session');
+			return false;
+		}
+		return true;
+	}
+}
 
 function startPreparingGame(msg, args, sessionName){
 	game[msg.guild.id][sessionName] = Session();

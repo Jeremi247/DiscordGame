@@ -12,7 +12,8 @@ exports.requestCommand = (msg, cmd, args) => {
 		case 'start' : session.begin(msg, args); break;
 		case 'join': session.join(msg, args); break;
 		case 'leave': session.leave(msg, args); break;
-		case 'repeat': repeat(msg, args); break;
+		case 'kick': session.kick(msg, args); break;
+		case 'harvest': eggplant(msg, args); break;
 		case 'eval': debug.eval(msg, args); break;
 		case 'check': debug.checkGame(msg); break;
 		default: console.log(
@@ -20,10 +21,6 @@ exports.requestCommand = (msg, cmd, args) => {
 			+ msg + ' ' + args.join(' ') + '"');
 	}
 };
-
-function repeat(msg, args){
-	msg.channel.sendMessage(args.join(' '));
-}
 
 function eggplant(msg){
 	msg.channel.sendMessage(icons.eggplant);
