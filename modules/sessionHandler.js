@@ -84,14 +84,6 @@ exports.leave = (msg, args) => {
 			game[msg.guild.id][sessionName] = session;
 		}
 	}
-	
-	function isSessionEmpty(msg){
-		if(session.playersJoined == 0){
-			msg.channel.sendMessage('The game has been disbanded');
-			delete game[msg.guild.id][sessionName];
-			return;
-		}
-	}
 
 	function canLeave(msg){
 		if(!sessionName){
@@ -153,10 +145,6 @@ function startPreparingGame(msg, args, sessionName){
 	msg.channel.sendMessage('Preparing session: ' + sessionName);
 
 	exports.join(msg, args, true);
-}
-
-function startSession(msg){
-	msg.channel.sendMessage('Session started!');
 }
 
 function Session(){
