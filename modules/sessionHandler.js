@@ -1,4 +1,4 @@
-const gameController = require('./gameContainer.js');
+const gameController = require('../containers/gameContainer.js');
 let game = gameController.getGame();
 
 exports.init = (msg) =>{
@@ -39,7 +39,7 @@ exports.begin = (msg, args) => {
 
 	updateGameContainer(game);
 
-	
+
 
 	function canBegin(msg, sessionName){
 		if(!sessionName){
@@ -148,10 +148,14 @@ exports.join = (msg, args, master) => {
 	}
 };
 
-exports.kick = (msg, args) => {
+exports.kick = (msg, args, savedName) => {
 	updateGameObject();
 	let userToKick = args.shift();
 	userToKick = translateUserName(userToKick);
+
+	if(savedName != args){
+		args = savedName;
+	}
 
 	let sessionName = args.join(' ');
 	let session;

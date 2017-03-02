@@ -1,4 +1,5 @@
-const gameController = require('../modules/gameContainer.js');
+const gameController = require('../containers/gameContainer.js');
+const names = require('../containers/rememberedNames.js');
 const config = require('../json/config.json');
 
 exports.checkGame = (msg) => {
