@@ -39,6 +39,8 @@ exports.begin = (msg, args) => {
 
 	updateGameContainer(game);
 
+	
+
 	function canBegin(msg, sessionName){
 		if(!sessionName){
 			msg.channel.sendMessage('You need to provide name of the session you want to start');
@@ -136,6 +138,10 @@ exports.join = (msg, args, master) => {
 		}
 		if(session.players.hasOwnProperty(msg.author.id)){
 			msg.channel.sendMessage('You already are in this session');
+			return false;
+		}
+		if(session.isInProgress){
+			msg.channel.sendMessage('You can not join the session that is in progress');
 			return false;
 		}
 		return true;
