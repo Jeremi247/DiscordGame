@@ -1,5 +1,6 @@
 const config = require('../json/config.json');
 const cmd = require('./commandsHandler.js');
+const playersSettings = require('../containers/playersSettings.js')
 let localBot;
 
 exports.init = function(msg){
@@ -16,12 +17,18 @@ exports.setBot = function(bot){
 }
 
 function getArgumentsArray(msg, config){
-	return msg.content.substring(config.prefix.length, msg.length).split(' ');
+	if(!playersSettings.hasPrefixDisabled(msg)){
+		return msg.content.substring(config.prefix.length, msg.length).split(' ');
+	}
+	else { 
+		return msg.content.split(' ');
+	}
 }
 
 function isMessageInvalid(msg, bot, config){
 		return msg.author.id === bot.user.id ||
-		!msg.content.startsWith(config.prefix) ||
+		(!msg.content.startsWith(config.prefix) &&
+		!playersSettings.hasPrefixDisabled(msg)) ||
 		msg.content.length <= config.prefix;
 }
 

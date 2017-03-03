@@ -1,5 +1,5 @@
 const icons = require('../json/icons.json');
-const names = require('../containers/rememberedNames.js');
+const playersSettings = require('../containers/playersSettings.js');
 
 exports.eggplant = (msg) => {
 	msg.channel.sendMessage(icons.eggplant);
@@ -12,7 +12,7 @@ exports.remember = (msg, args) => {
 		return msg.channel.sendMessage('You must provide a name you want to save');
 	}
 
-	names.setName(msg, msg.author.id, args);
+	playersSettings.setName(msg, msg.author.id, args);
 }
 
 exports.help = (msg) => {
@@ -33,4 +33,11 @@ exports.help = (msg) => {
 	msg.channel.sendEmbed(embed);
 }
 
+exports.disablePrefix = (msg) => {
+	playersSettings.disablePrefix(msg);
+}
+
+exports.enablePrefix = (msg) => {
+	playersSettings.enablePrefix(msg);
+}
 module.exports = exports;

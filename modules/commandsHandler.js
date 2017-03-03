@@ -2,11 +2,11 @@ const config = require('../json/config.json');
 const session = require('./sessionHandler.js');
 const misc = require('./miscCommands.js');
 const debug = require('../debug/debugCommands.js');
-const names = require('../containers/rememberedNames.js');
+const playersSettings = require('../containers/playersSettings.js');
 
 
 exports.requestCommand = (msg, cmd, args) => {
-	let sessionName = getSessionName(msg, args);
+	let sessionName = getPlayerSessionName(msg, args);
 
 	cmd = cmd.toLowerCase();
 	session.init(msg);
@@ -19,17 +19,19 @@ exports.requestCommand = (msg, cmd, args) => {
 		case 'kick': session.kick(msg, args, sessionName); break;
 		case 'harvest': misc.eggplant(msg, args); break;
 		case 'remember': misc.remember(msg, args); break;
+		case 'disableprefix': misc.disablePrefix(msg, args); break;
+		case 'enableprefix': misc.enablePrefix(msg, args); break;
 		case 'help': misc.help(msg); break;
 		case 'eval': debug.eval(msg, args); break;
 		case 'check': debug.checkGame(msg); break;
 		default: console.log(
 			'Someone send an unknown command: "'
-			+ msg + ' ' + args.join(' ') + '"');
+			+ cmd + ' ' + args.join(' ') + '"');
 	}
 
-	function getSessionName(msg, args){
-		if(names.hasSavedName(msg.author.id)){
-			return names.getName(msg.author.id);
+	function getPlayerSessionName(msg, args){
+		if(playersSettings.hasSavedName(msg.author.id)){
+			return playersSettings.getName(msg.author.id);
 		}
 		else{
 			return args;
